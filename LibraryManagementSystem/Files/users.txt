@@ -1,0 +1,6 @@
+suprav,suprav,Customer,Sanepa,9800000000,suprav.shrestha@gmail.com
+diwash,diwash,Customer,Jhapa,9800000000,diwash@gmail.com
+Sandesh,Sandesh,Customer,Lahan,9800000000,sandeshraj@gmail.com
+arun,arun,Customer,Nayabasti,9800000000,arun@gmail.com
+milan,milan,Customer,Dailekh,9800000000,milanpun@gmail.com
+sujal,sujal,Staff,sujal.shrestha@gmail.com,9860260351,sujal.shrestha@gmail.com 
