@@ -6,7 +6,8 @@
 # •	Implement a function to delete any staff member from the system by removing their line from the users.txt file.
 # •	Add a login system for Admins that checks the username, password, and role from the users.txt.
 import os
-userpath= 'E:\\Documents\\Python\\LMS\\Files\\users.txt'
+# Define the path to the users file
+userpath= 'e:\\Documents\\Git Hub\\Python-Tutorials\\LibraryManagementSystem\\Files\\users.txt'
 
 def create_user():
     username = input("Enter username: ")
@@ -15,19 +16,19 @@ def create_user():
     address = input("Enter address: ")
     phone = input("Enter phone number: ")
     email = input("Enter email: ")
-    
+    # check if role is valid
     if role not in ['Customer', 'Staff']:
         print("Invalid role. Please enter 'Admin' or 'Staff'.")
         return
-    
+    # check if all fields are filled
     if not username or not password or not address or not phone or not email:
         print("All fields are required. Please fill in all details.")
         return
-    
+    # check if phone number is valid
     if not phone.isdigit() or len(phone) != 10:
         print("Invalid phone number. Please enter a 10-digit phone number.")
         return
-    
+    # check if email is valid
     if '@' not in email or '.' not in email.split('@')[1]:
         print("Invalid email format. Please enter a valid email address.")
         return
@@ -41,7 +42,7 @@ def create_user():
             if user.split(',')[0] == username:
                 print("Username already exists. Please choose a different username.")
                 return
-    
+    #  If no duplicates, append the new user to the file
     with open(userpath, 'a') as file:
         file.write(f"{username},{password},{role},{address},{phone},{email} \n")
     
@@ -51,29 +52,36 @@ def view_users():
     if not os.path.exists(userpath):
         print("No users found.")
         return
-    
+    # Read the users from the file
     with open(userpath, 'r') as file:
         users = file.readlines()
-    
+    # Check if there are any users
     if not users:
         print("No users found.")
         return
     
     print("List of Users:")
+    # Iterate through the users and print their details
     for user in users:
         username, password, role, address, phone, email = user.strip().split(',')
         print(f"Username: {username}, Role: {role}, Address: {address}, Phone: {phone}, Email: {email}")
 
 def delete_user():
+    # Check if the users.txt file exists
     if not os.path.exists(userpath):
         print("No users found.")
         return
+    # Read the users from the file and prompt for the username to delete
     delete_entry = input("Enter the username of the user to delete: ")
     with open(userpath, 'r') as file:
         users = file.readlines()
+        
+    # Check if the user exists 
     with open(userpath, 'w') as file:
         found = False
+        # Iterate through the users and write back only those that do not match the username to delete
         for user in users:
+            # If the username does not match, write it back to the file
             if user.split(',')[0] != delete_entry:
                 file.write(user)
             else:
@@ -82,8 +90,9 @@ def delete_user():
             print(f"User {delete_entry} deleted successfully.")
         else:
             print(f"User {delete_entry} not found.")
+ 
     
-
+# Admin Menu Functionality
 def admin_menu():
     while True:
         print("Admin Menu:")

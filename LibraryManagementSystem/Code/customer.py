@@ -5,9 +5,13 @@
 # •	Borrow books by selecting from the available list. The program should confirm availability, reduce stock, and log the transaction in borrow.txt.
 # •	View their borrow history by filtering the borrow.txt file to show only records related to their username.
 import os
-book_path = 'E:\\Documents\\Python\\LMS\\Files\\books.txt'
-borrow_path = 'E:\\Documents\\Python\\LMS\\Files\\borrow.txt'
+# paths for files
+user_path = 'e:\\Documents\\Git Hub\\Python-Tutorials\\LibraryManagementSystem\\Files\\users.txt'
+book_path = 'e:\\Documents\\Git Hub\\Python-Tutorials\\LibraryManagementSystem\\Files\\books.txt'
+borrow_path = 'e:\\Documents\\Git Hub\\Python-Tutorials\\LibraryManagementSystem\\Files\\borrow.txt'
 
+# Dictionary to store login information
+# This will hold the username of the logged-in customer
 login={}
 
 
@@ -16,13 +20,14 @@ def login_customer():
     username = input("Enter your username: ")
     password = input("Enter your password: ")
     
-    if not os.path.exists('E:\\Documents\\Python\\LMS\\Files\\users.txt'):
+    # Check if the users.txt file exists and is not empty
+    if not os.path.exists(user_path):
         print("No users found.")
         return
-    
-    with open('E:\\Documents\\Python\\LMS\\Files\\users.txt', 'r') as file:
+    # Read the users from the file and validate the credentials
+    with open(user_path, 'r') as file:
         users = file.readlines()
-    
+    # Iterate through the users to find a match
     for user in users:
         user_details = user.strip().split(',')
         if user_details[0] == username and user_details[1] == password and user_details[2].lower() == 'customer':
@@ -49,94 +54,69 @@ def view_books():
     if not books:
         print("No books available.")
         return
-    
     print("Available Books:")
+    
+    # Iterate through the books and print their details
     for book in books:
         title, author, quantity, id_ = book.strip().split(',')
         print(f"Title: {title}, Author: {author}, Quantity: {quantity}, ID: {id_}")
 
 def borrow_book():
-    print()
-    book_name = input("Enter the book name to borrow: ").strip()
+    
+    book_name = input("Enter the name of the book you want to borrow: ").title().strip()
     if not book_name:
         print("Book name is required.")
         return
-
-    
-
     if not os.path.exists(book_path):
-        print("No books available.")
+        print("Books file not found.")
         return
 
-    with open(book_path, 'r') as f:
-        books = f.readlines()
+    with open(book_path, 'r') as file:
+        books = file.readlines()
 
-    updated_books = []
     book_found = False
-    selected_book = None
-
-    # Find the book
+    updated_books = []
     for book in books:
-        title, author, quantity, book_id = book.strip().split(',')
-        if title.lower() == book_name.lower():
+        title, author, quantity_str, book_id = book.strip().split(',')
+        if book_name.lower() == title.strip().lower():
             book_found = True
-            selected_book = (title, author, int(quantity), book_id)
+            quantity = int(quantity_str)
+            if quantity <= 0:
+                print(f"Insufficient stock of '{title}'.")
+                return
+
+            # Check if already borrowed
+            borrow_present = False
+            if os.path.exists(borrow_path):
+                with open(borrow_path, 'r') as borrow_file:
+                    for record in borrow_file:
+                        uname, bname, _, _ = record.strip().split(',')
+                        if uname == login['username'] and bname.strip().lower() == title.strip().lower():
+                            borrow_present = True
+                            break
+
+            if borrow_present:
+                print(f"{login['username']} has already borrowed '{title}'.")
+                return
+
+            # Log the borrow
+            with open(borrow_path, 'a') as borrow_file:
+                borrow_file.write(f"{login['username']},{title},{book_id},1\n")
+            print(f"{login['username']} borrowed 1 copy of '{title}'.")
+
+            # Update book quantity
+            updated_books.append(f"{title},{author},{quantity - 1},{book_id}\n")
         else:
-            updated_books.append(book.strip())
+            updated_books.append(book)
 
     if not book_found:
-        print(f"Book '{book_name}' not found.")
+        print("Book not found.")
         return
 
-    if selected_book[2] == 0:
-        print(f"'{selected_book[0]}' is currently out of stock.")
-        return
-
-    borrow_qty = input("Enter quantity to borrow: ").strip()
-    if not borrow_qty.isdigit() or int(borrow_qty) <= 0:
-        print("Invalid quantity.")
-        return
-    borrow_qty = int(borrow_qty)
-
-    if borrow_qty > selected_book[2]:
-        print(f"Only {selected_book[2]} copies available.")
-        return
-
-    new_quantity = selected_book[2] - borrow_qty
-    # Add updated book info back to list
-    updated_books.append(f"{selected_book[0]},{selected_book[1]},{new_quantity},{selected_book[3]}")
-
-    # Save updated book list
-    with open(book_path, 'w') as f:
-        for line in updated_books:
-            f.write(line + '\n')
-
-    # Handle borrow.txt
-    borrow_updated = []
-    borrow_recorded = False
-
-    if os.path.exists(borrow_path):
-        with open(borrow_path, 'r') as f:
-            borrow_records = f.readlines()
-
-        for record in borrow_records:
-            user, title, book_id, qty = record.strip().split(',')
-            if user == login['username'] and title.lower() == book_name.lower():
-                total_qty = int(qty) + borrow_qty
-                borrow_updated.append(f"{user},{title},{book_id},{total_qty}")
-                borrow_recorded = True
-            else:
-                borrow_updated.append(record.strip())
-
-    if not borrow_recorded:
-        borrow_updated.append(f"{login['username']},{selected_book[0]},{selected_book[3]},{borrow_qty}")
-
-    with open(borrow_path, 'w') as f:
-        for record in borrow_updated:
-            f.write(record + '\n')
-
-    print(f"{borrow_qty} copy of '{selected_book[0]}' borrowed successfully by {login['username']}.")
-
+    # Write updated books
+    with open(book_path, 'w') as file:
+        file.writelines(updated_books)
+     
               
 def view_borrow_history():
     print()

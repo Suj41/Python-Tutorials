@@ -8,9 +8,9 @@
 import os
 login={}
 
-userpath= 'E:\\Documents\\Python\\LMS\\Files\\users.txt'
-book_path = 'E:\\Documents\\Python\\LMS\\Files\\books.txt'
-borrow_path = 'E:\\Documents\\Python\\LMS\\Files\\borrow.txt'
+userpath= 'e:\\Documents\\Git Hub\\Python-Tutorials\\LibraryManagementSystem\\Files\\users.txt'
+book_path = 'e:\\Documents\\Git Hub\\Python-Tutorials\\LibraryManagementSystem\\Files\\books.txt'
+borrow_path = 'e:\\Documents\\Git Hub\\Python-Tutorials\\LibraryManagementSystem\\Files\\borrow.txt'
 
 def add_new_book():
     title = input("Enter book title: ").title().strip()
@@ -246,7 +246,7 @@ def staff_menu():
         else:
             print("Invalid choice. Please try again.")
         
-        if choice not in ['1', '2', '3', '4', '5','6']:
+        if choice not in ['1', '2', '3', '4', '5','6','7','8']:
             print("Invalid choice. Please try again.")    
 
 def book_submit():
